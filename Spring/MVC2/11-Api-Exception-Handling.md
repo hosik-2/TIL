@@ -57,4 +57,30 @@ Why? -> ModelAndView 반환하고 우리가 안에서 처리해서 WAS는 에러
 
 
 - **대망의 ExceptionHandlerExceptionResolver**
-  - 
+  - 이 친구는 API 응답을 아주 유동적으로 가능하게 해준다.
+  - 컨트롤러 안에 메서드 형태로 정의하면 그 컨트롤러 안에서 발생한 설정한 예외처리를 해줌
+  - ```
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST) // 응답 코드를 바꿔주고 싶으면 이거 호출하고 바꿔주자!
+    @ExceptionHandler(IllegalArgumentException.class) // 컨트롤러 안에 정의하면 이 컨트롤러에서 발생한 이 예외처리 해줌
+    public ErrorResult illegalExHandler(IllegalArgumentException e) {
+        log.error("[exceptionHandler] ex", e);
+        return new ErrorResult("BAD", e.getMessage()); //ErrorResult는 필드객체(JSON 형식 정해놓은 객체임)
+        // 여기서는 알아서 HttpMessageConverter + ObjectMapper 호출해서 응답바디까지 싹 바꿔서 올려주고
+        // 마지막에 return new ModelAndView 해줘서 /**정상 흐름으로 바꿔줌**/
+        // 결국 WAS까지 안올라가서 2번 반복 안함
+        // 하지만 정상이라서 statusCode가 200으로 나감 -> @ResponseStatus 사용
+    }
+    ```
+  - ErrorResult와 같이 JSON 형식의 응답 객체를 사용하여 API 응답을 유동적으로 처리할 수 있다.
+  - 주석처럼 스프링에서 알아서 ModelAndView를 리턴해줘서 정상 흐름으로 바꿔줌 -> 에러코드를 설정하고 싶으면 @ResponseStatus 사용
+  - @ExceptionHandler에 파라미터 생략 가능 
+  - ```
+    @ExceptionHandler // 어노테이션 부분 생략(메서드 파라미터에 적어준 예외로 동작)
+    public ResponseEntity<ErrorResult> userExHandler(UserException e)
+    ```
+  - **중요함! 위 코드처럼 반환값을 객체가 아닌 ResponseEntity로 사용하게 되면 API 객체와 상태코드를 유동적으로 바꿀 수 있음**
+-> if문 등을 사용해서 에러 메세지나 코드를 보고 다른 예외코드와 메시지를 던져줄 수 있음
+  - 그리고 @ExceptionHandler 파라미터 code에(에러코드 부분) 2개 이상 넣을 수도 있음
+  - 메서드 파라미터에 Exception 처럼 상위 예외까지 등록하면 자세한 에러(IllegalArgumentException 등)에 해당하지 않는 나머지를 
+싹 다 처리 가능함 ㅇㅋ?
+  - 아 진짜 마지막임 그 @ResponseBody나 @RestController가 아닌 메서드에는 return new ModelAndView("/error") 처럼 에러페이지 반환 가능!
