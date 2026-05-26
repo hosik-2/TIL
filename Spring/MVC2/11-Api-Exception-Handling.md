@@ -84,3 +84,21 @@ Why? -> ModelAndView 반환하고 우리가 안에서 처리해서 WAS는 에러
   - 메서드 파라미터에 Exception 처럼 상위 예외까지 등록하면 자세한 에러(IllegalArgumentException 등)에 해당하지 않는 나머지를 
 싹 다 처리 가능함 ㅇㅋ?
   - 아 진짜 마지막임 그 @ResponseBody나 @RestController가 아닌 메서드에는 return new ModelAndView("/error") 처럼 에러페이지 반환 가능!
+
+## Advice의 등장
+
+- 이런 에러처리들을 컨트롤러 안에서 하면 책임 분리가 안되고 굉장히 지저분해보임!
+- 그래서 관심사 분리가 가능한 Advice가 등장함
+- ```
+  @Slf4j
+  @RestControllerAdvice(basePackages = "hello.exception.api")
+  // 대상으로 지정한 컨트롤러에 @ExceptionHandler, @InitBinder 기능 부여
+  // 대상을 지정하지 않으면 모든 컨트롤러에 다 지정된당
+  public class ExControllerAdvice {
+  ```
+- 종류는 @ControllerAdvice / @RestController 두가지 있음
+- 파라미터는 저렇게 패키지, 어노테이션(ex : @RestController), 클래스 직접 지정 이렇게 세가지!
+<br>혹여나 아무 것도 지정하지 않으면 전역으로 설정이 된다.
+
+
+
