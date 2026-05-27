@@ -96,7 +96,7 @@ Why? -> ModelAndView 반환하고 우리가 안에서 처리해서 WAS는 에러
   // 대상을 지정하지 않으면 모든 컨트롤러에 다 지정된당
   public class ExControllerAdvice {
   ```
-- 종류는 @ControllerAdvice / @RestController 두가지 있음
+- 종류는 @ControllerAdvice / @RestControllerAdvice 두가지 있음
 - 파라미터는 저렇게 패키지, 어노테이션(ex : @RestController), 클래스 직접 지정 이렇게 세가지!
 <br>혹여나 아무 것도 지정하지 않으면 전역으로 설정이 된다.
 
