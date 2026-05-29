@@ -25,3 +25,17 @@ DefaultConversionService conversionService = new DefaultConversionService();
         System.out.println("result = " + result);****
 ```
 - 저 서비스가 알아서 컨버터 안에 리턴타입과 파라미터 타입을 보고 추론해서 맞는 컨버터를 사용!
+- 물론 저건 테스트코드에서 한 거라 일일이 선언해서 다 등록했지만 실제 비즈니스 로직에서는 빈으로 등록하고
+주입 받아서 쓰면 된당 알잘딱깔센 ㅇㅋ?
+
+## ISP(Interface Segregation Principal) - 인터페이스 분리 원칙
+
+- 뭐.. 일단 정의는 클라이언트가 자신이 이용하지 않는 메서드에 의존하지 않아야 한다. 이거임
+- DefaultConversionService는 인터페이스를 두개 extends하는데
+  1. ConversionService: 컨버터 사용에 초점 (canConvert(), convert())
+  2. ConverterRegistry: 컨버터 등록에 초점 (addConverter())
+<br> 이런 식임
+- 근데 여기서 궁금한 점 -> 그러면 실제 사용할 때 컨버터에 등록을 필요 없고 convert()만 쓰고 싶다 그러면
+주입 받을 때 ConversionService converter 이런식으로 주입 받나? -> ***맞음***
+- 주입을 받아서 사용할 때 실제로 들어오는 객체는 DefaultConversionService이거지만 타입선언을 ConversionService로
+했기 때문에 사용 가능한 메서드는 ConversionService에 있는 메서드만 사용 가능한 거임!(다형성!)
